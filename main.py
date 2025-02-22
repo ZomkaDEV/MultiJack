@@ -1,4 +1,4 @@
-version = "2.0.0-ALPHA"
+version = "1.0.0"
 
 import ctypes
 import json

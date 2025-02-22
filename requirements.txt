@@ -1,0 +1,4 @@
+PyQt6
+psutil
+xbox360controller; sys.platform == "linux"
+pyinstaller

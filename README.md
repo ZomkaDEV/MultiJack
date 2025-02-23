@@ -26,9 +26,9 @@ Notes:
 ---
 
 Special thanks to:  
-* Akira896 (Translating to Spanish LA)
-* AlexisL61 (Translating to French)
-* Team Gamechanger (Translating to German)
-* burandby (Windows testing and troubleshooting)
+* [Akira896](https://github.com/AkiraArtuhaxis) (Translating to Spanish LA)
+* [AlexisL61](https://github.com/AlexisL61) (Translating to French)
+* [Team Gamechanger](https://jackboxpatch.de/) (Translating to German)
+* [burandby](https://bsky.app/profile/burandby.neocities.org) (Windows testing and troubleshooting)
 * Mx. Freggers (macOS ARM testing)
 * Karadical (Windows testing)

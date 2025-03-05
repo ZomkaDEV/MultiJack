@@ -151,7 +151,10 @@ def set_config_option(option):
 
 
 def get_available_envs(game):
-    env_path = os.path.join(get_default_config_location(), 'env', game)
+    with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as config_file:
+        config_data = json.load(config_file)
+    env_path = os.path.join(config_data.get("env_location"), game)
+
     if not os.path.exists(env_path):
         return [], {}
     envs = []

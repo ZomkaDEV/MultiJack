@@ -269,7 +269,9 @@ class LaunchEnvWindow(QDialog):
             logging.info("Launching vanilla game.")
             subprocess.Popen([sys.argv[-1]], cwd=os.path.dirname(sys.argv[-1]), start_new_session=True)
         else:
-            env_launcher = os.path.join(get_default_config_location(), "env", self.game, env_id, get_default_game_executable(self.game))
+            with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as config_file:
+                config_data = json.load(config_file)
+            env_launcher = os.path.join(config_data.get("env_location"), self.game, env_id, get_default_game_executable(self.game))
             if not os.path.exists(env_launcher):
                 logging.error("Executable not found.")
                 QMessageBox.critical(self, "MultiJack", get_string("executable_not_found"))

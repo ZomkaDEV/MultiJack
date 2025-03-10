@@ -558,7 +558,7 @@ class MJMainWindow(QMainWindow):
         self.about_window = None
 
         self.setWindowTitle("MultiJack")
-        self.setGeometry(100, 100, 500, 200)
+        self.setGeometry(100, 100, 600, 200)
 
         widget = QWidget()
         self.setCentralWidget(widget)
@@ -585,7 +585,7 @@ class MJMainWindow(QMainWindow):
             col = index % 3
 
             button = QPushButton(game)
-            button.setFixedSize(175, 25)
+            button.setFixedSize(190, 32)
             button.setStyleSheet("text-align: center; padding: 5px;")
             button.clicked.connect(lambda _, g=game: self.manage_env(g))
 

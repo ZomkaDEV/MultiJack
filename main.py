@@ -135,11 +135,7 @@ def set_config_option(option):
         with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as file:
             data = json.load(file)
         for key, value in option.items():
-            if key in data:
-                data[key] = value
-            else:
-                QMessageBox.critical(None, "MultiJack", f"Requested key is not in config.json!")
-                sys.exit(1)
+            data[key] = value
         with open(get_default_config_location() + "config.json", 'w', encoding='utf-8') as config:
             json.dump(data, config, indent=4)
     except FileNotFoundError:
@@ -228,6 +224,15 @@ class LaunchEnvWindow(QDialog):
         if not self.game:
             logger.error("There's no game specified!")
             sys.exit(1)
+        try:
+            if isinstance(_temp_launch, (list, tuple)) and len(_temp_launch) >= 2:
+                if _temp_launch[0] == self.game:
+                    logger.info(f"Silently launching {self.game} (env: {_temp_launch[1]})")
+                    self.launch_environment(_temp_launch[1])
+                    sys.exit(1)
+        except NameError:
+            logger.info("Preparing env selection...")
+
         self.envs, self.env_ids = get_available_envs(self.game)
         self.env_list.addItem(get_string("vanilla_game"))
         self.env_list.addItems(self.envs)
@@ -1183,11 +1188,38 @@ class MJMainWindow(QMainWindow):
 app = QApplication(sys.argv)
 logger = logging.getLogger(__name__)
 
-if "-launcher" in sys.argv:
+def get_arg_value(flag):
+    if flag in sys.argv:
+        index = sys.argv.index(flag)
+        if index + 1 < len(sys.argv):
+            return sys.argv[index + 1]
+    return None
+
+if "-launch" in sys.argv and "-env" in sys.argv:
+    with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as config_file:
+        config_data = json.load(config_file)
+    logging.basicConfig(filename=os.path.join(get_default_config_location(), "multijacklaunch.log"), encoding='utf-8', level=logging.DEBUG)
+    game = get_arg_value("-launch")
+    env = get_arg_value("-env")
+    if os.path.exists(os.path.join(config_data.get("install_location"), game)) and os.path.exists(os.path.join(config_data.get("env_location"), game, env)):
+        set_config_option({"temp_launch": [game, env]})
+    match sys.platform:
+        case "win32":
+            os.system(f"start steam://launch/{games.get(game)}")
+        case "darwin":
+            os.system(f"open steam://launch/{games.get(game)}")
+        case "linux":
+            os.system(f"xdg-open steam://launch/{games.get(game)}")
+    sys.exit(0)
+
+elif "-launcher" in sys.argv:
     with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as config_file:
         config_data = json.load(config_file)
     logging.basicConfig(filename=os.path.join(get_default_config_location(), "multijacklauncher.log"), encoding='utf-8', level=logging.DEBUG)
     _selected_language = config_data.get("language")
+    if config_data.get("temp_launch"):
+        _temp_launch = config_data.get("temp_launch")
+        set_config_option({"temp_launch": []})
     window = LaunchEnvWindow()
     window.show()
     sys.exit(app.exec())

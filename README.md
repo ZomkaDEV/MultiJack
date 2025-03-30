@@ -32,3 +32,4 @@ Special thanks to:
 * [burandby](https://bsky.app/profile/burandby.neocities.org) (Windows testing and troubleshooting)
 * Mx. Freggers (macOS ARM testing)
 * Karadical (Windows testing)
+* [ali kirb](https://bsky.app/profile/alikirb.bsky.social) (Windows testing)

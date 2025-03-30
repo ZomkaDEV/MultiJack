@@ -5,6 +5,7 @@ import json
 import logging
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -240,7 +241,7 @@ class LaunchEnvWindow(QDialog):
             logger.error("There's no game specified!")
             sys.exit(1)
         try:
-            if isinstance(_temp_launch, (list, tuple)) and len(_temp_launch) >= 2:
+            if isinstance(_temp_launch, (list, tuple)) and len(_temp_launch) >= 1:
                 if _temp_launch[0] == self.game:
                     logger.info(f"Silently launching {self.game} (env: {_temp_launch[1]})")
                     self.launch_environment(_temp_launch[1])
@@ -292,9 +293,13 @@ class LaunchEnvWindow(QDialog):
         env_config_location = os.path.join(config_data.get("env_location"), self.game, env_id, "DO_NOT_REMOVE.json")
         current_launch_options = ""
         if os.path.exists(env_config_location):
-            current_launch_options = json.load(open(env_config_location, 'r')).get("launch_options")
+            env_config = json.load(open(env_config_location, 'r'))
+            if env_config.get("launch_options"):
+                current_launch_options = env_config.get("launch_options")
         if env_id == "":
             logging.info("Launching vanilla game.")
+            if current_launch_options != "":
+                logging.info(f"Launch options: {current_launch_options}")
             subprocess.Popen([sys.argv[-1], current_launch_options], cwd=os.path.dirname(sys.argv[-1]), start_new_session=True)
         else:
             env_launcher = os.path.join(config_data.get("env_location"), self.game, env_id, get_default_game_executable(self.game))
@@ -304,7 +309,6 @@ class LaunchEnvWindow(QDialog):
                 return
             logging.info(f"Launching executable: {env_launcher}")
             subprocess.Popen([env_launcher, current_launch_options], cwd=os.path.dirname(env_launcher), start_new_session=True)
-        logging.info(f"Launch options: {current_launch_options}")
 
         self.close()
         QApplication.quit()
@@ -952,12 +956,19 @@ class MJMainWindow(QMainWindow):
             QMessageBox.critical(None, "MultiJack", get_string("adding_launch_options_failed"))
             return
         if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-            launch_option = re.sub(r"\\", r"\\\\", f"\"{os.path.abspath(sys.executable)}\" -launcher %command%")
+            executable = os.path.abspath(sys.executable)
         else:
-            launch_option = re.sub(r"\\", r"\\\\", f"python3 \"{os.path.abspath(__file__)}\" -launcher %command%")
+            executable = f"python3 {os.path.abspath(__file__)}"
             # ^^^ works only if python3 is added to path
             # and if you have the dependencies
             # either way, it's for debugging only
+
+        quoted_executable = shlex.quote(executable)
+
+        if os.name == "nt":
+            quoted_executable = quoted_executable.replace("\\", "\\\\")
+
+        launch_option = f"{quoted_executable} -launcher %command%"
 
         modified_users = {}
 
@@ -1275,21 +1286,25 @@ def get_arg_value(flag):
             return sys.argv[index + 1]
     return None
 
-if "-launch" in sys.argv and "-env" in sys.argv:
+if "-launch" in sys.argv:
     with open(os.path.join(get_default_config_location(), "config.json"), 'r', encoding='utf-8') as config_file:
         config_data = json.load(config_file)
     logging.basicConfig(filename=os.path.join(get_default_config_location(), "multijacklaunch.log"), encoding='utf-8', level=logging.DEBUG)
     game = get_arg_value("-launch")
     env = get_arg_value("-env")
-    if os.path.exists(os.path.join(config_data.get("install_location"), game)) and os.path.exists(os.path.join(config_data.get("env_location"), game, env)):
-        set_config_option({"temp_launch": [game, env]})
-    match sys.platform:
-        case "win32":
-            os.system(f"start steam://launch/{games.get(game)}")
-        case "darwin":
-            os.system(f"open steam://launch/{games.get(game)}")
-        case "linux":
-            os.system(f"xdg-open steam://launch/{games.get(game)}")
+    launch_options = get_arg_value("-launch_options")
+    if os.path.exists(os.path.join(config_data.get("install_location"), game)):
+        if env:
+            if not os.path.exists(os.path.join(config_data.get("env_location"), game, env)):
+                logger.error(f"Environment {env} does not exist!")
+        set_config_option({"temp_launch": [game, env, launch_options]})
+        match sys.platform:
+            case "win32":
+                os.system(f"start steam://launch/{games.get(game)}")
+            case "darwin":
+                os.system(f"open steam://launch/{games.get(game)}")
+            case "linux":
+                os.system(f"xdg-open steam://launch/{games.get(game)}")
     sys.exit(0)
 
 elif "-launcher" in sys.argv:

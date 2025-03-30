@@ -123,8 +123,8 @@ def get_default_executable():
 def set_config_option(option):
     if not os.path.exists(get_default_config_location()):
         os.makedirs(get_default_config_location())
-    if not os.path.isfile(get_default_config_location() + "config.json"):
-        with open(get_default_config_location() + "config.json", 'w') as config:
+    if not os.path.isfile(os.path.join(get_default_config_location(), "config.json")):
+        with open(os.path.join(get_default_config_location(), "config.json"), 'w') as config:
             json.dump({
                 "language": "",
                 "steam_location": "",
@@ -132,11 +132,11 @@ def set_config_option(option):
                 "env_location": ""
             }, config, indent=4)
     try:
-        with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as file:
+        with open(os.path.join(get_default_config_location(), "config.json"), 'r', encoding='utf-8') as file:
             data = json.load(file)
         for key, value in option.items():
             data[key] = value
-        with open(get_default_config_location() + "config.json", 'w', encoding='utf-8') as config:
+        with open(os.path.join(get_default_config_location(), "config.json"), 'w', encoding='utf-8') as config:
             json.dump(data, config, indent=4)
     except FileNotFoundError:
         QMessageBox.critical(None, "MultiJack", f"Configuration file not found!")
@@ -147,7 +147,7 @@ def set_config_option(option):
 
 
 def get_available_envs(game):
-    with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as config_file:
+    with open(os.path.join(get_default_config_location(), "config.json"), 'r', encoding='utf-8') as config_file:
         config_data = json.load(config_file)
     env_path = os.path.join(config_data.get("env_location"), game)
 
@@ -174,6 +174,21 @@ def get_available_envs(game):
                 env_ids[d] = d
     return envs, env_ids
 
+def add_launch_options_to_env(env_config_location, launch_options):
+    if env_config_location is not None:
+        if os.path.basename(os.path.dirname(env_config_location)) in games:
+            vanilla_env_config = {
+                "vanilla": True,
+                "launch_options": launch_options
+            }
+            with open(env_config_location, "w") as file:
+                json.dump(vanilla_env_config, file, indent=4)
+        elif os.path.exists(env_config_location):
+            with open(env_config_location, "r") as file:
+                env_config = json.load(file)
+            env_config["launch_options"] = launch_options
+            with open(env_config_location, "w") as file:
+                json.dump(env_config, file, indent=4)
 
 class ControllerListener(QThread):
     if sys.platform == "linux":
@@ -270,19 +285,26 @@ class LaunchEnvWindow(QDialog):
             self.launch_environment(env_id)
 
     def launch_environment(self, env_id):
+        with open(os.path.join(get_default_config_location(), "config.json"), 'r', encoding='utf-8') as config_file:
+            config_data = json.load(config_file)
         if env_id is None:
+            env_id = ""
+        env_config_location = os.path.join(config_data.get("env_location"), self.game, env_id, "DO_NOT_REMOVE.json")
+        current_launch_options = ""
+        if os.path.exists(env_config_location):
+            current_launch_options = json.load(open(env_config_location, 'r')).get("launch_options")
+        if env_id == "":
             logging.info("Launching vanilla game.")
-            subprocess.Popen([sys.argv[-1]], cwd=os.path.dirname(sys.argv[-1]), start_new_session=True)
+            subprocess.Popen([sys.argv[-1], current_launch_options], cwd=os.path.dirname(sys.argv[-1]), start_new_session=True)
         else:
-            with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as config_file:
-                config_data = json.load(config_file)
             env_launcher = os.path.join(config_data.get("env_location"), self.game, env_id, get_default_game_executable(self.game))
             if not os.path.exists(env_launcher):
                 logging.error("Executable not found.")
                 QMessageBox.critical(self, "MultiJack", get_string("executable_not_found"))
                 return
             logging.info(f"Launching executable: {env_launcher}")
-            subprocess.Popen([env_launcher], cwd=os.path.dirname(env_launcher), start_new_session=True)
+            subprocess.Popen([env_launcher, current_launch_options], cwd=os.path.dirname(env_launcher), start_new_session=True)
+        logging.info(f"Launch options: {current_launch_options}")
 
         self.close()
         QApplication.quit()
@@ -338,7 +360,7 @@ class mj_language_selection_window(QMainWindow):
             _selected_language = language_code
             set_config_option({"language": language_code})
             self.close()
-            with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as config_file:
+            with open(os.path.join(get_default_config_location(), "config.json"), 'r', encoding='utf-8') as config_file:
                 self.config_data = json.load(config_file)
             if self.config_data.get("steam_location") == "":
                 self.open_mj_steam_location_config_window = mj_steam_location_config_window()
@@ -357,7 +379,7 @@ class mj_steam_location_config_window(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as config_file:
+        with open(os.path.join(get_default_config_location(), "config.json"), 'r', encoding='utf-8') as config_file:
             self.config_data = json.load(config_file)
 
         self.setWindowTitle("MultiJack")
@@ -435,7 +457,7 @@ class mj_install_location_config_window(QMainWindow):
 
         layout = QVBoxLayout(widget)
 
-        with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as config_file:
+        with open(os.path.join(get_default_config_location(), "config.json"), 'r', encoding='utf-8') as config_file:
             self.config_data = json.load(config_file)
 
         set_location_label = QLabel(get_string("select_install_location"), self)
@@ -505,7 +527,7 @@ class mj_env_location_config_window(QMainWindow):
 
         layout = QVBoxLayout(widget)
 
-        with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as config_file:
+        with open(os.path.join(get_default_config_location(), "config.json"), 'r', encoding='utf-8') as config_file:
             self.config_data = json.load(config_file)
 
         set_location_label = QLabel(get_string("select_env_location"), self)
@@ -555,7 +577,7 @@ class MJMainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as config_file:
+        with open(os.path.join(get_default_config_location(), "config.json"), 'r', encoding='utf-8') as config_file:
             self.config_data = json.load(config_file)
         self.add_launch_option()
 
@@ -637,7 +659,9 @@ class MJMainWindow(QMainWindow):
 
         self.env_dialog = QDialog(self)
         self.env_dialog.setWindowTitle("MultiJack")
-        self.env_dialog.setGeometry(100, 100, 400, 100)
+        self.env_dialog.setGeometry(100, 100, 400, 150)
+
+        self.launch_options_dialog = None
 
         layout = QVBoxLayout(self.env_dialog)
 
@@ -647,6 +671,7 @@ class MJMainWindow(QMainWindow):
         env_list = QListWidget(self.env_dialog)
         envs_array = self.get_envs(game)
         env_names = {}
+        env_list.addItem(get_string("vanilla_game"))
         for env in envs_array:
             env_check = os.path.join(self.config_data.get("env_location"), game, env, "DO_NOT_REMOVE.json")
             if os.path.isfile(env_check):
@@ -661,11 +686,11 @@ class MJMainWindow(QMainWindow):
 
         layout.addWidget(env_list)
 
-        if len(envs_array) != 0:
-            open_folder_button = QPushButton(get_string("open_folder"), self)
-            open_folder_button.clicked.connect(lambda: self.open_selected_folder(game, env_list, env_names))
-            layout.addWidget(open_folder_button)
+        open_folder_button = QPushButton(get_string("open_folder"), self)
+        open_folder_button.clicked.connect(lambda: self.open_selected_folder(game, env_list, env_names))
+        layout.addWidget(open_folder_button)
 
+        if len(envs_array) > 0:
             inject_mod_button = QPushButton(get_string("inject_mod_into_env"), self)
             inject_mod_button.clicked.connect(lambda: self.inject_mod_into_selected_env(game, env_list, env_names))
             layout.addWidget(inject_mod_button)
@@ -673,14 +698,58 @@ class MJMainWindow(QMainWindow):
             delete_env_button = QPushButton(get_string("delete_env"), self)
             delete_env_button.clicked.connect(lambda: self.delete_env(game, env_names.get(env_list.currentItem().text()), env_list, env_names))
             layout.addWidget(delete_env_button)
-        else:
-            env_list.addItem(get_string("no_envs"))
+
+        add_launch_options_to_env_button = QPushButton(get_string("add_launch_options"), self)
+        add_launch_options_to_env_button.clicked.connect(lambda: self.add_launch_options_to_env_dialog(game, env_list, env_names))
+        layout.addWidget(add_launch_options_to_env_button)
 
         create_env_button = QPushButton(get_string("create_env"), self)
         create_env_button.clicked.connect(lambda _, g=game: self.create_env(g))
         layout.addWidget(create_env_button)
 
         self.env_dialog.exec()
+
+    def add_launch_options_to_env_dialog(self, game, env_list, env_names):
+        if self.launch_options_dialog is None or not self.launch_options_dialog.isVisible():
+            selected_row = env_list.currentRow()
+            if selected_row >= 0:
+                selected_name = env_list.item(selected_row).text()
+                env_to_be_modified = env_names.get(selected_name)
+
+                if env_to_be_modified is None:
+                    env_to_be_modified = ""
+                self.env_config_location = os.path.join(self.config_data.get("env_location"), game, env_to_be_modified, "DO_NOT_REMOVE.json")
+                current_launch_options = ""
+                if os.path.exists(self.env_config_location):
+                    current_launch_options = json.load(open(self.env_config_location, 'r')).get("launch_options")
+
+                if env_to_be_modified or selected_name == get_string("vanilla_game"):
+                    self.launch_options_dialog = QDialog(self)
+                    self.launch_options_dialog.setWindowTitle("MultiJack")
+                    self.launch_options_dialog.setGeometry(100, 100, 400, 100)
+
+                    game_label = QLabel(self)
+                    game_label.setText(get_string("add_launch_options"))
+
+                    self.set_launch_options_lineedit = QLineEdit(self)
+                    self.set_launch_options_lineedit.setText(current_launch_options)
+
+                    close_button = QPushButton(get_string("close"), self)
+                    close_button.clicked.connect(self.launch_options_dialog.close)
+
+                    add_launch_options_to_env_layout = QVBoxLayout(self.launch_options_dialog)
+                    add_launch_options_to_env_layout.addWidget(game_label)
+                    add_launch_options_to_env_layout.addWidget(self.set_launch_options_lineedit)
+                    add_launch_options_to_env_layout.addWidget(close_button)
+                    self.launch_options_dialog.finished.connect(self.add_launch_options_dialog_handler)
+                    self.launch_options_dialog.exec()
+                else:
+                    QMessageBox.warning(self, "MultiJack", get_string("env_not_found_error"))
+            else:
+                QMessageBox.warning(self, "MultiJack", get_string("select_env_error"))
+
+    def add_launch_options_dialog_handler(self):
+        add_launch_options_to_env(self.env_config_location, self.set_launch_options_lineedit.text())
 
     def inject_mod_into_selected_env(self, game, env_list, env_names):
         selected_row = env_list.currentRow()
@@ -689,6 +758,8 @@ class MJMainWindow(QMainWindow):
             env_to_inject = env_names.get(selected_name)
             if env_to_inject:
                 self.inject_mod_into_env(game, env_to_inject)
+            elif selected_name == get_string("vanilla_game"):
+                QMessageBox.warning(self, "MultiJack", get_string("cant_modify_vanilla"))
             else:
                 QMessageBox.warning(self, "MultiJack", get_string("env_not_found_error"))
         else:
@@ -699,17 +770,26 @@ class MJMainWindow(QMainWindow):
         if selected_row >= 0:
             selected_name = env_list.item(selected_row).text()
             env_to_open = env_names.get(selected_name)
+            vanilla_folder_path = os.path.join(self.config_data.get("install_location"), game)
             if env_to_open:
-                folder_path = os.path.join(self.config_data.get("env_location"), game, env_to_open)
-                if os.path.exists(folder_path):
+                env_folder_path = os.path.join(self.config_data.get("env_location"), game, env_to_open)
+                if os.path.exists(env_folder_path):
                     if os.name == 'nt':
-                        os.startfile(folder_path)
+                        os.startfile(env_folder_path)
                     elif os.name == 'posix':
-                        subprocess.Popen(['open', folder_path] if sys.platform == 'darwin' else ['xdg-open', folder_path])
+                        subprocess.Popen(['open', env_folder_path] if sys.platform == 'darwin' else ['xdg-open', env_folder_path])
                 else:
-                    logger.error(f"Folder does not exist: {folder_path}")
+                    logger.error(f"Folder does not exist.")
+            elif os.path.exists(vanilla_folder_path):
+                if os.name == 'nt':
+                    os.startfile(vanilla_folder_path)
+                elif os.name == 'posix':
+                    subprocess.Popen(['open', vanilla_folder_path] if sys.platform == 'darwin' else ['xdg-open', vanilla_folder_path])
 
     def delete_env(self, game, env, env_list=None, env_names=None):
+        if env is None:
+            QMessageBox.warning(self, "MultiJack", get_string("cant_delete_vanilla"))
+            return
         env_path = os.path.join(self.config_data.get("env_location"), game, env)
 
         if os.path.exists(env_path):
@@ -762,7 +842,7 @@ class MJMainWindow(QMainWindow):
 
     def create_env(self, game):
         env_name, ok = QInputDialog.getText(self, "MultiJack", get_string("name_env"))
-        if not ok or not env_name.strip():
+        if not ok or not env_name.strip() or env_name == game:
             QMessageBox.warning(self, "MultiJack", get_string("invalid_name_env"))
             return
         game_env_location = os.path.join(self.config_data.get("env_location"), game)
@@ -872,9 +952,9 @@ class MJMainWindow(QMainWindow):
             QMessageBox.critical(None, "MultiJack", get_string("adding_launch_options_failed"))
             return
         if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-            launch_option = re.sub(r"\\", r"\\\\", f"{os.path.abspath(sys.executable)} -launcher %command%")
+            launch_option = re.sub(r"\\", r"\\\\", f"\"{os.path.abspath(sys.executable)}\" -launcher %command%")
         else:
-            launch_option = re.sub(r"\\", r"\\\\", f"python3 {os.path.abspath(__file__)} -launcher %command%")
+            launch_option = re.sub(r"\\", r"\\\\", f"python3 \"{os.path.abspath(__file__)}\" -launcher %command%")
             # ^^^ works only if python3 is added to path
             # and if you have the dependencies
             # either way, it's for debugging only
@@ -1196,7 +1276,7 @@ def get_arg_value(flag):
     return None
 
 if "-launch" in sys.argv and "-env" in sys.argv:
-    with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as config_file:
+    with open(os.path.join(get_default_config_location(), "config.json"), 'r', encoding='utf-8') as config_file:
         config_data = json.load(config_file)
     logging.basicConfig(filename=os.path.join(get_default_config_location(), "multijacklaunch.log"), encoding='utf-8', level=logging.DEBUG)
     game = get_arg_value("-launch")
@@ -1213,7 +1293,7 @@ if "-launch" in sys.argv and "-env" in sys.argv:
     sys.exit(0)
 
 elif "-launcher" in sys.argv:
-    with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as config_file:
+    with open(os.path.join(get_default_config_location(), "config.json"), 'r', encoding='utf-8') as config_file:
         config_data = json.load(config_file)
     logging.basicConfig(filename=os.path.join(get_default_config_location(), "multijacklauncher.log"), encoding='utf-8', level=logging.DEBUG)
     _selected_language = config_data.get("language")
@@ -1231,7 +1311,7 @@ else:
                 params = ' '.join([f'"{arg}"' for arg in sys.argv])
                 ctypes.windll.shell32.ShellExecuteW(None, "runas", script, params, None, 1)
                 sys.exit(0)
-        with open(get_default_config_location() + "config.json", 'r', encoding='utf-8') as config_file:
+        with open(os.path.join(get_default_config_location(), "config.json"), 'r', encoding='utf-8') as config_file:
             config_data = json.load(config_file)
         _selected_language = config_data.get("language")
         logging.basicConfig(filename=os.path.join(get_default_config_location(), "multijack.log"), encoding='utf-8', level=logging.DEBUG)

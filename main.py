@@ -292,10 +292,14 @@ class LaunchEnvWindow(QDialog):
             env_id = ""
         env_config_location = os.path.join(config_data.get("env_location"), self.game, env_id, "DO_NOT_REMOVE.json")
         current_launch_options = ""
-        if os.path.exists(env_config_location):
-            env_config = json.load(open(env_config_location, 'r'))
-            if env_config.get("launch_options"):
-                current_launch_options = env_config.get("launch_options")
+        try:
+            if _temp_launch[2]:
+                current_launch_options = _temp_launch[2]
+        except NameError:
+            if os.path.exists(env_config_location):
+                env_config = json.load(open(env_config_location, 'r'))
+                if env_config.get("launch_options"):
+                    current_launch_options = env_config.get("launch_options")
         if env_id == "":
             logging.info("Launching vanilla game.")
             if current_launch_options != "":

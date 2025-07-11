@@ -975,9 +975,10 @@ class MJMainWindow(QMainWindow):
             # and if you have the dependencies
             # either way, it's for debugging only
 
-        quoted_executable = shlex.quote(executable)
         if os.name == "nt":
-            quoted_executable = quoted_executable.replace("\\", "\\\\")
+            quoted_executable = f"\"{executable.replace("\\", "\\\\")}\"".replace("\"", "\\\"")
+        else:
+            quoted_executable = shlex.quote(executable)
 
         launch_option = f"{quoted_executable} -launcher %command%"
 

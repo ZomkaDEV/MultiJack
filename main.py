@@ -229,6 +229,13 @@ class ControllerListener(QThread):
 class LaunchEnvWindow(QDialog):
     def __init__(self):
         super().__init__()
+
+        self.game = os.path.basename(os.path.dirname(sys.argv[-1]))
+        self.envs, self.env_ids = get_available_envs(self.game)
+        if len(self.envs) == 0:
+            self.launch_environment(None)
+            sys.exit(1)
+
         self.setWindowTitle("MultiJack")
         self.setGeometry(100, 100, 500, 200)
 
@@ -237,7 +244,6 @@ class LaunchEnvWindow(QDialog):
         layout.addWidget(self.label)
 
         self.env_list = QListWidget(self)
-        self.game = os.path.basename(os.path.dirname(sys.argv[-1]))
         if not self.game:
             logger.error("There's no game specified!")
             sys.exit(1)
@@ -249,8 +255,6 @@ class LaunchEnvWindow(QDialog):
                     sys.exit(1)
         except NameError:
             logger.info("Preparing env selection...")
-
-        self.envs, self.env_ids = get_available_envs(self.game)
         self.env_list.addItem(get_string("vanilla_game"))
         self.env_list.addItems(self.envs)
         layout.addWidget(self.env_list)
@@ -968,10 +972,13 @@ class MJMainWindow(QMainWindow):
             # and if you have the dependencies
             # either way, it's for debugging only
 
-        quoted_executable = shlex.quote(executable)
-
         if os.name == "nt":
-            quoted_executable = quoted_executable.replace("\\", "\\\\")
+            if not (executable.startswith('"') and executable.endswith('"')):
+                quoted_executable = f'"{executable}"'
+            else:
+                quoted_executable = executable
+        else:
+            quoted_executable = shlex.quote(executable)
 
         launch_option = f"{quoted_executable} -launcher %command%"
 

@@ -309,7 +309,7 @@ class LaunchEnvWindow(QDialog):
             logging.info("Launching vanilla game.")
             if current_launch_options != "":
                 logging.info(f"Launch options: {current_launch_options}")
-            subprocess.Popen([sys.argv[-1], current_launch_options], cwd=os.path.dirname(sys.argv[-1]), start_new_session=True)
+            subprocess.Popen([get_default_game_executable(self.game), current_launch_options], cwd=os.path.dirname(sys.argv[-1]), start_new_session=True)
         else:
             env_launcher = os.path.join(config_data.get("env_location"), self.game, env_id, get_default_game_executable(self.game))
             if not os.path.exists(env_launcher):

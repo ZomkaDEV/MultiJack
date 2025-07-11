@@ -844,10 +844,13 @@ class MJMainWindow(QMainWindow):
         return envs
 
     def is_steam_running(self):
-        if sys.platform != "win32":
-            steam = "steamwebhelper"
-        else:
-            steam = "steam.exe"
+        match sys.platform:
+            case "win32":
+                steam = "steam.exe"
+            case "darwin":
+                steam = "steam_osx"
+            case "linux":
+                steam = "steamwebhelper"
         for process in psutil.process_iter(["name"]):
             if steam in process.info["name"].lower():
                 return True

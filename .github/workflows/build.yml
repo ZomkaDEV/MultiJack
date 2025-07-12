@@ -1,0 +1,60 @@
+name: Build MultiJack
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-13, windows-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Create virtual environment
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate || .venv\Scripts\activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+        shell: bash
+
+      - name: Run build.py
+        run: |
+          source .venv/bin/activate || .venv\Scripts\activate
+          python build.py
+        shell: bash
+
+      - name: Upload Linux artifact (.tar.gz)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Linux-Build
+          path: dist/MultiJack*.tar.gz
+
+      - name: Upload macOS artifact (.dmg)
+        if: matrix.os == 'macos-13'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macOS-Build
+          path: MultiJack*.dmg
+
+      - name: Upload Windows artifact (.exe)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-Build
+          path: Output\MultiJack*.exe

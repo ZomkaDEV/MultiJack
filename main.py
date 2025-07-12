@@ -678,7 +678,7 @@ class MJMainWindow(QMainWindow):
         delete_envs_confirm = QMessageBox.question(self, "MultiJack", get_string("delete_all_envs"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
 
         if delete_envs_confirm == QMessageBox.StandardButton.Yes:
-            double_confirm = QMessageBox.question(self, "MultiJack", get_string("do_you_want_to_continue"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            double_confirm = QMessageBox.question(self, "MultiJack", get_string("delete_all_envs_confirmation"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
             if double_confirm == QMessageBox.StandardButton.Yes:
                 env_path = self.config_data.get("env_location")
                 try:

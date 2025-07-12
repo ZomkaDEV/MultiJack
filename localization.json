@@ -61,6 +61,7 @@
     "executable_not_found": "Executable not found. Your environment might be corrupt. Try remaking your environment.",
     "reset_config": "Reset config",
     "delete_all_envs": "Do you also want to delete all of your environments?",
+    "delete_all_envs_confirmation": "Are you sure you want to delete all of your environments?",
     "delete_all_envs_success": "Your environments were deleted. Click OK to proceed.",
     "reset_config_success": "Your config was reset. Goodbye!",
     "something_went_wrong": "Something went wrong!\n\nPlease reach out to Zomka and provide a screenshot of this window and your log file!\n(It's located in %LOGFILELOCATION%)\n\nException:\n"
@@ -276,8 +277,9 @@
     "launch_options_not_set": "На данный момент параметры запуска игр Jackbox через MultiJack\nу вас не стоят или указывают неправильный путь к MultiJack.\n\nВы хотите их поставить?",
     "reset_config": "Сбросить настройки",
     "delete_all_envs": "Вы хотите заодно удалить все свои среды?",
+    "delete_all_envs_confirmation": "Вы уверены что хотите удалить все свои среды?",
     "delete_all_envs_success": "Ваши среды были удалены. Нажмите OK чтобы продолжить.",
     "reset_config_success": "Ваши настройки были сброшены. До свидания!",
-    "something_went_wrong": "Что-то пошло не так!\n\nСвяжись с Zomka и отправь скриншот данного окна и свой лог файл!\n(Он находится в %LOGFILELOCATION%)\n\nОшибка:\n"
+    "something_went_wrong": "Что-то пошло не так!\n\nСвяжитесь с Zomka и отправьте скриншот данного окна и свой лог файл!\n(Он находится в %LOGFILELOCATION%)\n\nОшибка:\n"
   }
 }

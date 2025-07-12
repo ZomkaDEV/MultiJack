@@ -660,11 +660,44 @@ class MJMainWindow(QMainWindow):
             about_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             about_layout.addWidget(about_label)
 
+            reset_config_button = QPushButton(get_string("reset_config"), self.about_window)
+            reset_config_button.clicked.connect(self.reset_config)
+            about_layout.addWidget(reset_config_button, alignment=Qt.AlignmentFlag.AlignCenter)
+
             close_button = QPushButton(get_string("close"), self.about_window)
             close_button.clicked.connect(self.about_window.close)
             about_layout.addWidget(close_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
             self.about_window.show()
+
+    def reset_config(self):
+        first_confirm = QMessageBox.question(self, "MultiJack", get_string("do_you_want_to_continue"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        if first_confirm != QMessageBox.StandardButton.Yes:
+            return
+
+        delete_envs_confirm = QMessageBox.question(self, "MultiJack", get_string("delete_all_envs"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+
+        if delete_envs_confirm == QMessageBox.StandardButton.Yes:
+            double_confirm = QMessageBox.question(self, "MultiJack", get_string("do_you_want_to_continue"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            if double_confirm == QMessageBox.StandardButton.Yes:
+                env_path = self.config_data.get("env_location")
+                try:
+                    if os.path.exists(env_path):
+                        shutil.rmtree(env_path)
+                        logger.info(f"Deleted all environments at {env_path}")
+                        QMessageBox.information(self, "MultiJack", get_string("delete_all_envs_success"))
+                except Exception as e:
+                    logger.error(f"Failed to delete envs: {e}")
+                    QMessageBox.critical(self, "MultiJack", f"{get_string("something_went_wrong").replace("%LOGFILELOCATION%", os.path.join(get_default_config_location(), "multijack.log"))}{e}")
+                    return
+        try:
+            if os.path.exists(os.path.join(get_default_config_location())):
+                shutil.rmtree(os.path.join(get_default_config_location()))
+                QMessageBox.information(self, "MultiJack", get_string("reset_config_success"))
+        except Exception as e:
+            QMessageBox.critical(self, "MultiJack", f"{get_string("something_went_wrong").replace("%LOGFILELOCATION%", os.path.join(get_default_config_location(), "multijack.log"))}{e}")
+        QApplication.quit()
+
 
     def manage_env(self, game):
         if self.env_dialog is not None and self.env_dialog.isVisible():
@@ -712,7 +745,7 @@ class MJMainWindow(QMainWindow):
             delete_env_button.clicked.connect(lambda: self.delete_env(game, env_names.get(env_list.currentItem().text()), env_list, env_names))
             layout.addWidget(delete_env_button)
 
-        add_launch_options_to_env_button = QPushButton(get_string("add_launch_options"), self)
+        add_launch_options_to_env_button = QPushButton(get_string("change_launch_options"), self)
         add_launch_options_to_env_button.clicked.connect(lambda: self.add_launch_options_to_env_dialog(game, env_list, env_names))
         layout.addWidget(add_launch_options_to_env_button)
 
@@ -742,7 +775,7 @@ class MJMainWindow(QMainWindow):
                     self.launch_options_dialog.setGeometry(100, 100, 400, 100)
 
                     game_label = QLabel(self)
-                    game_label.setText(get_string("add_launch_options"))
+                    game_label.setText(get_string("launch_options"))
 
                     self.set_launch_options_lineedit = QLineEdit(self)
                     self.set_launch_options_lineedit.setText(current_launch_options)
@@ -1291,6 +1324,10 @@ class MJMainWindow(QMainWindow):
 app = QApplication(sys.argv)
 logger = logging.getLogger(__name__)
 
+# log get big. space wasted.
+if os.path.exists(os.path.join(get_default_config_location(), "multijack.log")):
+    os.remove(os.path.join(get_default_config_location(), "multijack.log"))
+
 def get_arg_value(flag):
     if flag in sys.argv:
         index = sys.argv.index(flag)
@@ -1320,6 +1357,9 @@ if "-launch" in sys.argv:
     sys.exit(0)
 
 elif "-launcher" in sys.argv:
+    if not os.path.exists(os.path.join(get_default_config_location(), "config.json")):
+        QMessageBox.critical(None, "MultiJack", "Your config file was not found! Please open MultiJack!")
+        sys.exit(1)
     with open(os.path.join(get_default_config_location(), "config.json"), 'r', encoding='utf-8') as config_file:
         config_data = json.load(config_file)
     logging.basicConfig(filename=os.path.join(get_default_config_location(), "multijacklauncher.log"), encoding='utf-8', level=logging.DEBUG)

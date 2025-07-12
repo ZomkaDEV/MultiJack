@@ -46,7 +46,8 @@
     "cant_delete_vanilla": "You cannot delete the vanilla game.",
     "cant_modify_vanilla": "You cannot modify the vanilla game.",
     "injecting_files": "Injecting mod files...",
-    "add_launch_options": "Add launch options",
+    "change_launch_options": "Change launch options",
+    "launch_options": "Launch options",
     "adding_launch_options_success": "The launch options were added successfully!\nDo you want to launch Steam?",
     "adding_launch_options_failed": "The launch options weren't added. Try again.",
     "launch_options_not_empty": "MultiJack will need to replace your games' launch options,\nso you could choose an environment when launching a game.\n\nPlease keep in mind that at this point MultiJack doesn't support\ncustom launch options and they would be overwritten.",
@@ -57,7 +58,12 @@
     "select_env_to_launch": "Select an environment to launch.",
     "launch_env": "Launch environment",
     "vanilla_game": "Vanilla game",
-    "executable_not_found": "Executable not found. Your environment might be corrupt. Try remaking your environment."
+    "executable_not_found": "Executable not found. Your environment might be corrupt. Try remaking your environment.",
+    "reset_config": "Reset config",
+    "delete_all_envs": "Do you also want to delete all of your environments?",
+    "delete_all_envs_success": "Your environments were deleted. Click OK to proceed.",
+    "reset_config_success": "Your config was reset. Goodbye!",
+    "something_went_wrong": "Something went wrong!\n\nPlease reach out to Zomka and provide a screenshot of this window and your log file!\n(It's located in %LOGFILELOCATION%)\n\nException:"
   },
   "deu": {
     "continue": "Weiter",
@@ -97,7 +103,7 @@
     "mod_injection_failed": "Das Einfügen des Mods wurde abgebrochen oder ist fehlgeschlagen!",
     "env_not_found_error": "Die Umgebung, die du verändern willst, wurde nicht gefunden.",
     "injecting_files": "Mod-Dateien werden eingefügt...",
-    "add_launch_options": "Startoptionen hinzufügen",
+    "launch_options": "Startoptionen",
     "adding_launch_options_success": "Die Startoptionen wurden erfolgreich hinzugefügt!\nMöchtest du Steam starten?",
     "adding_launch_options_failed": "Die Startoptionen wurden nicht hinzugefügt. Versuche es erneut.",
     "launch_options_not_empty": "MultiJack muss die Startoptionen deiner Spiele ersetzen, damit du beim Start eines Spiels eine Umgebung auswählen kannst.\n\nBeachte bitte, dass MultiJack momentan keine benutzerdefinierten Startoptionen unterstützt und diese überschrieben würden.",
@@ -149,7 +155,7 @@
     "env_not_found_error": "L'environnement que vous essayez de modifier n'a pas été trouvé.",
     "injecting_files": "Injection des fichiers du mod...",
     "other": "Autres fonctions",
-    "add_launch_options": "Ajouter des options de lancement",
+    "launch_options": "Des options de lancement",
     "adding_launch_options_success": "Les options de lancement ont bien été ajoutés !\nVoulez-vous lancer Steam ?",
     "adding_launch_options_failed": "Les options de lancement n'ont pas été ajoutés. Veuillez réessayer.",
     "launch_options_not_empty": "MultiJack devra remplacer les options de lancement de vos jeux, afin que vous puissiez choisir un environnement lors du lancement d'un jeu. Veuillez garder à l'esprit qu'à ce stade, MultiJack ne prend pas en charge les options de lancement personnalisées et qu'elles seront écrasées.",
@@ -200,7 +206,7 @@
     "mod_injection_failed": "¡La inyección de un mod que quieres fue cancelada o falló!",
     "env_not_found_error": "El entorno que estás tratando de modificar no fue encontrado.",
     "injecting_files": "Inyectando archivos del mod...",
-    "add_launch_options": "Añadir opciones de ejecución",
+    "launch_options": "Opciones de ejecución",
     "adding_launch_options_success": "¡Las opciones de ejecución fueron añadidas con éxito!\n¿Quieres ejecutar Steam?",
     "adding_launch_options_failed": "Las opciones de ejecución no fueron añadidas. Inténtalo de nuevo.",
     "launch_options_not_empty": "MultiJack deberá reemplazar las opciones de ejecución de tus juegos,\n por lo que podrás elegir un entorno al iniciar un juego.\n\nTen en cuenta que, en este momento, MultiJack no admite\nopciones de inicio personalizadas y se sobrescribirán.",
@@ -255,7 +261,8 @@
     "cant_modify_vanilla": "Вы не можете изменять ванильную игру.",
     "injecting_files": "Внедрение файлов мода...",
     "other": "Другие функции",
-    "add_launch_options": "Добавить параметры запуска",
+    "change_launch_options": "Изменить параметры запуска",
+    "launch_options": "Параметры запуска",
     "adding_launch_options_success": "Параметры запуска были удачно добавлены.\nВы хотите запустить Steam?",
     "adding_launch_options_failed": "Не удалось добавить параметры запуска. Попробуйте ещё раз.",
     "launch_options_not_empty": "У вас уже стоят пользовательские параметры запуска. Знайте, что пока что MultiJack не поддерживает пользовательские параметры запуска, и они будут заменены.",
@@ -266,6 +273,11 @@
     "launch_env": "Запустить среду",
     "vanilla_game": "Ванильная игра",
     "executable_not_found": "Исполняемый файл игры не найден. Ваша среда может быть повреждена. Попробуйте её пересоздать.",
-    "launch_options_not_set": "На данный момент параметры запуска игр Jackbox через MultiJack\nу вас не стоят или указывают неправильный путь к MultiJack.\n\nВы хотите их поставить?"
+    "launch_options_not_set": "На данный момент параметры запуска игр Jackbox через MultiJack\nу вас не стоят или указывают неправильный путь к MultiJack.\n\nВы хотите их поставить?",
+    "reset_config": "Сбросить настройки",
+    "delete_all_envs": "Вы хотите заодно удалить все свои среды?",
+    "delete_all_envs_success": "Ваши среды были удалены. Нажмите OK чтобы продолжить.",
+    "reset_config_success": "Ваши настройки были сброшены. До свидания!",
+    "something_went_wrong": "Что-то пошло не так!\n\nСвяжись с Zomka и отправь скриншот данного окна и свой лог файл!\n(Он находится в %LOGFILELOCATION%)\n\nОшибка:"
   }
 }

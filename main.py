@@ -692,6 +692,12 @@ class MJMainWindow(QMainWindow):
                     return
         try:
             if os.path.exists(os.path.join(get_default_config_location())):
+                #Windows will complain that it can't delete the log file because it's in use
+                for handler in logger.handlers[:]:
+                    handler.close()
+                    logger.removeHandler(handler)
+                logging.shutdown()
+
                 shutil.rmtree(os.path.join(get_default_config_location()))
                 QMessageBox.information(self, "MultiJack", get_string("reset_config_success"))
         except Exception as e:

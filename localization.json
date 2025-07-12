@@ -63,7 +63,7 @@
     "delete_all_envs": "Do you also want to delete all of your environments?",
     "delete_all_envs_success": "Your environments were deleted. Click OK to proceed.",
     "reset_config_success": "Your config was reset. Goodbye!",
-    "something_went_wrong": "Something went wrong!\n\nPlease reach out to Zomka and provide a screenshot of this window and your log file!\n(It's located in %LOGFILELOCATION%)\n\nException:"
+    "something_went_wrong": "Something went wrong!\n\nPlease reach out to Zomka and provide a screenshot of this window and your log file!\n(It's located in %LOGFILELOCATION%)\n\nException:\n"
   },
   "deu": {
     "continue": "Weiter",
@@ -278,6 +278,6 @@
     "delete_all_envs": "Вы хотите заодно удалить все свои среды?",
     "delete_all_envs_success": "Ваши среды были удалены. Нажмите OK чтобы продолжить.",
     "reset_config_success": "Ваши настройки были сброшены. До свидания!",
-    "something_went_wrong": "Что-то пошло не так!\n\nСвяжись с Zomka и отправь скриншот данного окна и свой лог файл!\n(Он находится в %LOGFILELOCATION%)\n\nОшибка:"
+    "something_went_wrong": "Что-то пошло не так!\n\nСвяжись с Zomka и отправь скриншот данного окна и свой лог файл!\n(Он находится в %LOGFILELOCATION%)\n\nОшибка:\n"
   }
 }

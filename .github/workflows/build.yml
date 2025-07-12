@@ -22,21 +22,39 @@ jobs:
       - name: Set up Python 3
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.13'
 
-      - name: Create virtual environment
+      - name: Install dependencies (Unix)
+        if: runner.os != 'Windows'
+        shell: bash
         run: |
           python -m venv .venv
-          source .venv/bin/activate || .venv\Scripts\activate
+          source .venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
-        shell: bash
 
-      - name: Run build.py
-        run: |
-          source .venv/bin/activate || .venv\Scripts\activate
-          python build.py
+      - name: Run build.py (Unix)
+        if: runner.os != 'Windows'
         shell: bash
+        run: |
+          source .venv/bin/activate
+          python build.py
+
+      - name: Install dependencies (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          python -m venv .venv
+          .\.venv\Scripts\Activate.ps1
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run build.py (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          .\.venv\Scripts\Activate.ps1
+          python build.py
 
       - name: Upload Linux artifact (.tar.gz)
         if: matrix.os == 'ubuntu-latest'

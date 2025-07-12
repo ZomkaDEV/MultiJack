@@ -219,7 +219,16 @@
     "select_env_to_launch": "Selecciona un entorno para ejecutar.",
     "launch_env": "Ejecutar entorno",
     "vanilla_game": "Juego vanilla",
-    "executable_not_found": "Ejecutable no encontrado. Puede que tu entorno esté corrupto. Intenta rehacer tu entorno."
+    "executable_not_found": "Ejecutable no encontrado. Puede que tu entorno esté corrupto. Intenta rehacer tu entorno.",
+    "cant_delete_vanilla": "No puedes borrar el juego vanilla.",
+    "cant_modify_vanilla": "No puedes modificar el juego vanilla.",
+    "change_launch_options": "Cambiar opciones de ejecución",
+    "delete_all_envs": "¿Quieres también eliminar todos tus entornos?",
+    "delete_all_envs_confirmation": "¿Estás seguro que quieres eliminar todos tus entornos?",
+    "delete_all_envs_success": "Tus entornos fueron eliminados. Haz clic en OK para continuar.",
+    "reset_config": "Restablecer configuración",
+    "reset_config_success": "Tu configuración fue restablecida. ¡Adiós!",
+    "something_went_wrong": "¡Algo salió mal!\n\n¡Por favor háblale a Zomka y provee una captura de pantalla de esta ventana y tu archivo de log!\n(Se encuentra en %LOGFILELOCATION%)\n\nExcepción:\n"
   },
   "rus": {
     "continue": "Продолжить",

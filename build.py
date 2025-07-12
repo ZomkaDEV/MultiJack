@@ -1,8 +1,10 @@
 import ast
 import os
+import platform
 import shutil
 import subprocess
 import sys
+import tarfile
 import importlib.metadata
 import PyInstaller.__main__
 
@@ -116,10 +118,20 @@ def main():
 
     print(f"Building version: {version}")
 
+    #Clear remains of old artifacts
+    if os.path.exists("dist"):
+        shutil.rmtree("dist")
+    if os.path.exists("Output"):
+        shutil.rmtree("Output")
+    if os.path.exists("Output"):
+        shutil.rmtree("Output")
+    if os.path.exists(f"MultiJack-{version}-macOS-{platform.machine()}.dmg"):
+        os.remove(f"MultiJack-{version}-macOS-{platform.machine()}.dmg")
+
     if sys.platform == "win32":
         issc = "C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe"
         if not os.path.exists(issc):
-            if not os.path.exists(sys.argv[1]):
+            if not os.path.exists(sys.argv[1]) and not sys.argv[1].endswith("ISCC.exe"):
                 print(bars)
                 print("Please specify location of Inno Setup before running the command!")
                 print("Like so:")
@@ -146,7 +158,7 @@ def main():
         print("Compiling the installer...")
         print(bars)
         try:
-            subprocess.run([issc, ".\\installer.iss", f"/DAppVersion={version}"])
+            subprocess.run([issc, ".\\installer.iss", f"/DAppVersion={version}", f"/DAppArch={platform.machine()}"])
         except:
             print(bars)
             print("Compiling the installer failed!")
@@ -177,7 +189,7 @@ def main():
                 "--icon", "MultiJack.app", "200", "190",
                 "--hide-extension", "MultiJack.app",
                 "--app-drop-link", "600", "185",
-                f"MultiJack-{version}-macOS-x64.dmg",
+                f"MultiJack-{version}-macOS-{platform.machine()}.dmg",
                 "dist/"
             ])
         except:
@@ -185,6 +197,12 @@ def main():
             print("Building the DMG failed!")
             print(bars)
             sys.exit(1)
+    elif sys.platform == "linux":
+        print(bars)
+        print("Creating tarball and compressing it with gzip...")
+        print(bars)
+        with tarfile.open(f"dist/MultiJack-{version}-Linux-{platform.machine()}.tar.gz", "w:gz") as tar:
+            tar.add("dist/MultiJack/", arcname="MultiJack")
 
     print(bars)
     print("Build completed!")
@@ -192,9 +210,9 @@ def main():
         case "win32":
             print("You can find the installer in the \"Output\" folder")
         case "darwin":
-            print(f"The DMG file is \"./MultiJack-{version}-macOS-x64.dmg\"")
+            print(f"The DMG file is \"./MultiJack-{version}-macOS-{platform.machine()}.dmg\"")
         case "linux":
-            print("You can find the build in \"dist/MultiJack/\"")
+            print(f"You can find the build in \"dist/MultiJack-{version}-Linux-{platform.machine()}.tar.gz\"")
     print(bars)
 
 if __name__ == "__main__":

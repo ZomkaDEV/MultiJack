@@ -38,7 +38,11 @@ games = {
     "Drawful 2": 442070,
     "Quiplash": 351510,
     "Quiplash 2 InterLASHional": 1111940,
-    "Fibbage XL": 448080
+    "Fibbage XL": 448080,
+    "The Jackbox Party Pack 9 Demo": 2132470,
+    "The Jackbox Party Pack 10 Demo": 2561940,
+    "The Jackbox Party Pack 11 Demo": 3827040,
+    "The Jackbox Survey Scramble Demo": 3257070
 }
 
 _localization_cache = None

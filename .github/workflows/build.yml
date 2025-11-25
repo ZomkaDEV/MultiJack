@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-2022]
+        os: [ubuntu-latest, macos-latest, macos-15-intel, windows-2022]
 
     steps:
       - name: Checkout repository
@@ -63,11 +63,18 @@ jobs:
           name: Linux-Build
           path: dist/MultiJack*.tar.gz
 
-      - name: Upload macOS artifact (.dmg)
+      - name: Upload macOS (arm64) artifact (.dmg)
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: macOS-Build
+          name: macOS-arm64-Build
+          path: ./MultiJack*.dmg
+
+      - name: Upload macOS (amd64) artifact (.dmg)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macOS-amd64-Build
           path: ./MultiJack*.dmg
 
       - name: Upload Windows artifact (.exe)

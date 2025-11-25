@@ -71,7 +71,7 @@ jobs:
           path: ./MultiJack*.dmg
 
       - name: Upload macOS (amd64) artifact (.dmg)
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-15-intel'
         uses: actions/upload-artifact@v4
         with:
           name: macOS-amd64-Build

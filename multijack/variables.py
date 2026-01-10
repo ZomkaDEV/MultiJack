@@ -1,0 +1,26 @@
+VERSION = "1.2.0"
+
+GAMES = {
+    "The Jackbox Party Pack": 331670,
+    "The Jackbox Party Pack 2": 397460,
+    "The Jackbox Party Pack 3": 434170,
+    "The Jackbox Party Pack 4": 610180,
+    "The Jackbox Party Pack 5": 774461,
+    "The Jackbox Party Pack 6": 1005300,
+    "The Jackbox Party Pack 7": 1211630,
+    "The Jackbox Party Pack 8": 1552350,
+    "The Jackbox Party Pack 9": 1850960,
+    "The Jackbox Party Pack 10": 2216830,
+    "The Jackbox Party Pack 11": 3364070,
+    "The Jackbox Naughty Pack": 2652000,
+    "The Jackbox Party Starter": 1755580,
+    "The Jackbox Survey Scramble": 2948640,
+    "Drawful 2": 442070,
+    "Quiplash": 351510,
+    "Quiplash 2 InterLASHional": 1111940,
+    "Fibbage XL": 448080,
+    "The Jackbox Party Pack 9 Demo": 2132470,
+    "The Jackbox Party Pack 10 Demo": 2561940,
+    "The Jackbox Party Pack 11 Demo": 3827040,
+    "The Jackbox Survey Scramble Demo": 3257070,
+}

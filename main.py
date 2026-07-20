@@ -32,6 +32,7 @@ games = {
     "The Jackbox Party Pack 9": 1850960,
     "The Jackbox Party Pack 10": 2216830,
     "The Jackbox Party Pack 11": 3364070,
+    "The Jackbox Party Pack 12": 4199960,
     "The Jackbox Naughty Pack": 2652000,
     "The Jackbox Party Starter": 1755580,
     "The Jackbox Survey Scramble": 2948640,
